@@ -1,0 +1,25 @@
+# Binaries / artifacts
+**/*.exe
+**/*.dll
+**/*.so
+**/*.dylib
+**/*.test
+**/*.out
+bin/
+dist/
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go
+vendor/
+.air.toml
+tmp/app
+tmp/build-errors.log

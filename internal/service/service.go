@@ -24,17 +24,8 @@ func (s *Service) CreateUser(login, password string) *models.User {
 	return s.repo.CreateUser(login, password)
 }
 
-func (s *Service) GetPosts(userID uint, limitStr, offsetStr string) *[]models.Post {
-
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit <= 0 {
-		limit = 10
-	}
-	offset, err := strconv.Atoi(offsetStr)
-	if err != nil || offset < 0 {
-		offset = 10
-	}
-
+func (s *Service) GetPosts(userID uint, limitStr, offsetStr string) []models.Post {
+	limit, offset := validateOffsetAndLimit(limitStr, offsetStr)
 	return s.repo.GetPosts(userID, limit, offset)
 }
 
@@ -46,6 +37,21 @@ func (s *Service) CreateComment(userID, postID uint, title string) *models.Comme
 	return s.repo.CreateComment(userID, postID, title)
 }
 
-func (s *Service) GetPostAndComments(postID uint) (*models.Post, error) {
-	return s.repo.GetPostAndComments(postID)
+func (s *Service) GetPostAndComments(postID uint, limitStr, offsetStr string) (*models.Post, error) {
+	limit, offset := validateOffsetAndLimit(limitStr, offsetStr)
+	return s.repo.GetPostAndComments(postID, limit, offset)
+}
+
+func validateOffsetAndLimit(limitStr, offsetStr string) (int, int) {
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 10
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	return limit, offset
 }

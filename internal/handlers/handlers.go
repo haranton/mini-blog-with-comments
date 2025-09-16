@@ -38,7 +38,7 @@ type createUserReq struct {
 func (h *Handler) CreateUser(c *gin.Context) {
 	var req createUserReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 
@@ -52,6 +52,7 @@ func (h *Handler) GetUser(c *gin.Context) {
 	user, err := h.svc.GetUserByLogin(login)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid login"})
+		return
 	}
 	c.JSON(http.StatusOK, user)
 }
@@ -78,8 +79,7 @@ func (h *Handler) GetPosts(c *gin.Context) {
 		return
 	}
 
-	limitStr := c.DefaultQuery("limit", "10")
-	offset := c.DefaultQuery("offset", "0")
+	limitStr, offset := getLimitAndOffset(c)
 
 	posts := h.svc.GetPosts(uint(id), limitStr, offset)
 	c.JSON(http.StatusOK, posts)
@@ -112,10 +112,19 @@ func (h *Handler) GetPostWithComments(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid post id"})
 		return
 	}
-	post, err := h.svc.GetPostAndComments(uint(id))
+
+	limitStr, offset := getLimitAndOffset(c)
+
+	post, err := h.svc.GetPostAndComments(uint(id), limitStr, offset)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	c.JSON(http.StatusOK, post)
+}
+
+func getLimitAndOffset(c *gin.Context) (string, string) {
+	limitStr := c.DefaultQuery("limit", "10")
+	offset := c.DefaultQuery("offset", "0")
+	return limitStr, offset
 }

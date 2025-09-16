@@ -18,9 +18,9 @@ func NewRepo(db *gorm.DB) *Repo {
 	}
 }
 
-func (r Repo) GetPosts(userID uint) *[]models.Post {
+func (r Repo) GetPosts(userID uint, limit, offset int) *[]models.Post {
 	var Posts []models.Post
-	r.db.Find(&Posts)
+	r.db.Where("user_id = ?", userID).Limit(limit).Offset(offset).Find(&Posts)
 	return &Posts
 }
 

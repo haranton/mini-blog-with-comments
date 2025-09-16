@@ -77,7 +77,11 @@ func (h *Handler) GetPosts(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
 	}
-	posts := h.svc.GetPosts(uint(id))
+
+	limitStr := c.DefaultQuery("limit", "10")
+	offset := c.DefaultQuery("offset", "0")
+
+	posts := h.svc.GetPosts(uint(id), limitStr, offset)
 	c.JSON(http.StatusOK, posts)
 }
 
